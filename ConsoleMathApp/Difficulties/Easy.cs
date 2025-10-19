@@ -4,23 +4,23 @@ namespace ConsoleMathApp;
 
 public class Easy
 {
-    public static void EasyMode(string mode)
+    public static async Task EasyMode(string mode)
     {
         var isRunning = true;
         Stopwatch timer = new();
-
+        var speech = new Speech();
+        Menu.Attempts = 1;
 
         while (isRunning)
         {
             var guessing = true;
             var tryingAgain = false;
             var sessionsFirstQuestion = true;
-            var attempts = 1;
             var a = MathLogic.RandomNum(mode);
             var b = MathLogic.RandomNum(mode);
 
             Console.WriteLine();
-            Menu.SubMenu(mode, a, b);
+            await Menu.SubMenu(mode, a, b);
 
             if (Menu.OperatorSymbol == '/')
             {
@@ -31,6 +31,17 @@ public class Easy
                 }
 
                 Menu.Answer = MathLogic.Divide(a, b);
+            }
+
+            if (Menu.OperatorSymbol == '-')
+            {
+                while (a < b)
+                {
+                    a = MathLogic.RandomNum(mode);
+                    b = MathLogic.RandomNum(mode);
+                }
+
+                Menu.Answer = MathLogic.Subtract(a, b);
             }
 
             if (Menu.QuittingGame)
@@ -59,6 +70,7 @@ public class Easy
                     a = MathLogic.RandomNum(mode);
                     b = MathLogic.RandomNum(mode);
 
+
                     if (Menu.OperatorSymbol == '/')
                     {
                         while (a % b != 0)
@@ -68,6 +80,17 @@ public class Easy
                         }
 
                         Menu.Answer = MathLogic.Divide(a, b);
+                    }
+
+                    if (Menu.OperatorSymbol == '-')
+                    {
+                        while (a < b)
+                        {
+                            a = MathLogic.RandomNum(mode);
+                            b = MathLogic.RandomNum(mode);
+                        }
+
+                        Menu.Answer = MathLogic.Subtract(a, b);
                     }
 
                     MathLogic.PrintProblem(a, b, Menu.OperatorSymbol);
@@ -80,17 +103,21 @@ public class Easy
                     Menu.Answer = MathLogic.Subtract(a, b);
                 else if (!sessionsFirstQuestion && Menu.OperatorSymbol == '*')
                     Menu.Answer = MathLogic.Multiply(a, b);
-                else if (!sessionsFirstQuestion && Menu.OperatorSymbol == '/') Menu.Answer = MathLogic.Divide(a, b);
+                else if (!sessionsFirstQuestion && Menu.OperatorSymbol == '/')
+                    Menu.Answer = MathLogic.Divide(a, b);
 
                 Console.WriteLine(" ───────────────────────────");
+                Console.WriteLine($"Answer: {Menu.Answer}");
                 Console.Write("    Guess: ");
 
                 try
                 {
-                    var guess = Convert.ToInt32(Console.ReadLine());
+                    await speech.GetGuessSpeechInput();
+                    var guess = Speech.NumGuess;
 
                     if (guess == Menu.Answer)
                     {
+                        speech.ContinueGettingInput = false;
                         timer.Stop();
                         var timeSpan = timer.Elapsed;
                         timer.Reset();
@@ -102,7 +129,7 @@ public class Easy
                         Console.WriteLine(" ───────────────────────────");
                         Console.WriteLine(" You are correct!");
                         Console.WriteLine();
-                        Console.WriteLine($" It took you {attempts} attempts.");
+                        Console.WriteLine($" It took you {Menu.Attempts} attempts.");
                         Console.WriteLine($" Time: {elapsedTime}");
                         tryingAgain = false;
 
@@ -111,20 +138,21 @@ public class Easy
                             Convert.ToString(
                                 $"Question {Menu.TotalProblemsSolved}: \n " +
                                 $"{a} {Menu.OperatorSymbol} {b} = {Menu.Answer} \n" +
-                                $" Attempts: {attempts}\n" +
+                                $" Attempts: {Menu.Attempts}\n" +
                                 $" Game Mode: {mode}\n" +
                                 $" Time: {elapsedTime}");
                         GameHistory.History.Add(completedProblem);
                         Menu.TotalProblemsSolved++;
                         // Play again?
-                        Console.WriteLine(" Play again? (Y/N)");
-                        Console.WriteLine();
-                        Console.WriteLine(" (Y generates a new problem)");
-                        Console.WriteLine(" (N returns to the Main Menu)");
+                        Console.WriteLine(" Play again?\n" +
+                                          " 'Yes' - Generates a new problem\n" +
+                                          " 'Menu' returns to menu");
                         Console.Write("   Choice: ");
-                        var response = Console.ReadLine();
 
-                        if (response.ToUpper() == "N")
+                        await speech.PlayAgainSpeechInput();
+                        var response = Speech.PlayAgainInput;
+
+                        if (response == "menu")
                         {
                             Console.Write("Returning to menu");
                             for (var i = 0; i < 3; i++)
@@ -134,55 +162,28 @@ public class Easy
                             }
 
                             Console.Clear();
-                            Menu.MainMenu();
                             guessing = false;
                             isRunning = false;
+                            await Menu.MainMenu();
                         }
-                        else if (response.ToUpper() == "Y")
+
+                        if (response == "yes")
                         {
                             Console.Clear();
                             sessionsFirstQuestion = false;
-                            attempts = 1;
-                        }
-                        else
-                        {
-                            while (response.ToUpper() != "Y" && response.ToUpper() != "N")
-                            {
-                                Console.WriteLine("Invalid input");
-                                Console.Write("Input: ");
-                                response = Console.ReadLine();
-                                response.ToUpper();
-                            }
-
-                            if (response.ToUpper() == "N")
-                            {
-                                Console.Clear();
-                                Menu.MainMenu();
-                            }
-
-                            if (response.ToUpper() == "Y")
-                            {
-                                Console.Clear();
-                                sessionsFirstQuestion = false;
-                                attempts = 1;
-                            }
+                            Menu.Attempts = 1;
                         }
                     }
                     else
                     {
-                        Console.Write("         Try again...");
-                        Thread.Sleep(600);
-                        Console.Clear();
-                        attempts++;
-                        tryingAgain = true;
+                        Menu.Attempts++;
                     }
                 }
                 catch
                 {
-                    Console.Write("         Try again...");
+                    Console.Write("Failed...Invalid input");
                     Thread.Sleep(600);
                     Console.Clear();
-                    attempts++;
                     tryingAgain = true;
                 }
             }

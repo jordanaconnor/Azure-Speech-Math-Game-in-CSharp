@@ -8,86 +8,70 @@ public class Menu
     public static int Answer;
     public static bool QuittingGame;
     public static int TotalProblemsSolved = 1;
+    public static int Attempts = 1;
+
 
     public static async Task MainMenu()
     {
         var looping = true;
         while (looping)
         {
-            var input = 1;
-
             Console.WriteLine();
             var table = new Table();
             table.Title("Math Game");
             table.Border(TableBorder.Rounded);
-            table.AddColumn("#");
-            table.Columns[0].Centered();
-            table.AddColumn("Options");
-            table.AddRow("1.", "Easy");
-            table.AddRow("2.", "Medium");
-            table.AddRow("3.", "Hard");
-            table.AddRow("4.", "Lightning Round");
-            table.AddRow("5.", "Game History");
-            table.AddRow("6.", "Quit");
+            table.AddColumn("Game Modes");
+            table.AddRow("Easy");
+            table.AddRow("Medium");
+            table.AddRow("Hard");
+            table.AddRow("Lightning");
+            table.AddRow("History");
+            table.AddRow("Quit");
 
             AnsiConsole.Write(table);
 
             var mode = "Mode not set";
+            string input;
+            var speech = new Speech();
 
             try
             {
-                var speech = new Speech();
-                await speech.GetSpeechInput();
-                input = Convert.ToInt32(Console.ReadLine());
+                await speech.GetMainMenuSpeechInput();
+                input = speech.UserChoice;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-            
-            
-            // try
-            // {
-            //     
-            //     Console.Write("Input: ");
-            //     input = Convert.ToInt32(Console.ReadLine());
-            //     Console.Clear();
-            // }
-            // catch (Exception e)
-            // {
-            //     Console.Clear();
-            //     MainMenu();
-            // }
 
             switch (input)
             {
-                case 1:
+                case "easy":
                     mode = "Easy";
-                    Easy.EasyMode(mode);
+                    await Easy.EasyMode(mode);
                     looping = false;
                     break;
-                case 2:
+                case "medium":
                     mode = "Medium";
-                    Medium.MediumMode(mode);
+                    await Medium.MediumMode(mode);
                     looping = false;
                     break;
-                case 3:
+                case "hard":
                     mode = "Hard";
-                    Hard.HardMode(mode);
+                    await Hard.HardMode(mode);
                     looping = false;
                     break;
-                case 4:
-                    //TODO randomize the lightning mode setting
+                case "lightning":
                     mode = "Lighting";
-                    LightningModeMenu(mode);
+                    await LightningModeMenu(mode);
                     looping = false;
                     break;
-                case 5:
+                case "history":
                     looping = false;
-                    GameHistory.ViewHistory();
+                    await GameHistory.ViewHistory();
                     break;
-                case 6:
+                case "quit":
                     looping = false;
                     PrintQuittingGame();
                     QuittingGame = true;
@@ -100,91 +84,82 @@ public class Menu
         }
     }
 
-    public static void SubMenu(string mode, int a, int b)
+    public static async Task SubMenu(string mode, int a, int b)
     {
         var table = new Table();
         table.Title($"{mode} Mode");
         table.Border(TableBorder.Rounded);
-        table.AddColumn("#");
-        table.AddColumn("Problem Type");
-        table.AddRow("1.", "+ ");
-        table.AddRow("2.", "- ");
-        table.AddRow("3.", "* ");
-        table.AddRow("4.", "/ ");
-        table.AddRow("5.", "Menu");
-        table.AddRow("6.", "Quit           ");
+        table.AddColumn("Choose a problem type\n" +
+                        "     (Operator)");
+        table.AddRow("Add");
+        table.AddRow("Subtract");
+        table.AddRow("Multiply");
+        table.AddRow("Divide");
+        table.AddRow("Menu");
+        table.AddRow("Quit");
 
         var looping = true;
+        string input;
+        var speech = new Speech();
 
         while (looping)
         {
             AnsiConsole.Write(table);
-            Console.WriteLine("Select a math operator ");
-            Console.Write("Input: ");
 
             try
             {
-                //User selection for game
-                var userOperatorInput = Convert.ToInt32(Console.ReadLine());
-
-                //Depending on the number chosen from the menu, the switch statements runs the math for the game.
-                switch (userOperatorInput)
-                {
-                    case 1:
-                        Console.Clear();
-                        OperatorSymbol = '+';
-                        Answer = MathLogic.Add(a, b);
-                        looping = false;
-                        break;
-                    case 2:
-                        Console.Clear();
-                        OperatorSymbol = '-';
-                        Answer = MathLogic.Subtract(a, b);
-                        looping = false;
-                        break;
-                    case 3:
-                        Console.Clear();
-                        OperatorSymbol = '*';
-                        Answer = MathLogic.Multiply(a, b);
-                        looping = false;
-                        break;
-                    case 4:
-                        Console.Clear();
-                        OperatorSymbol = '/';
-                        Answer = MathLogic.Divide(a, b);
-                        looping = false;
-                        break;
-                    case 5:
-                        looping = false;
-                        Console.Clear();
-                        MainMenu();
-                        break;
-                    case 6:
-                        looping = false;
-                        Console.Clear();
-                        PrintQuittingGame();
-                        QuittingGame = true;
-                        Environment.Exit(0);
-                        break;
-                    default:
-                        Console.Clear();
-                        Console.WriteLine();
-                        break;
-                }
+                await speech.GetSubMenuSpeechInput();
+                input = speech.UserChoice;
             }
             catch (Exception e)
             {
-                Console.Clear();
-                Console.WriteLine();
+                Console.WriteLine(e);
+                throw;
+            }
+
+            switch (input)
+            {
+                case "add":
+                    Console.Clear();
+                    OperatorSymbol = '+';
+                    Answer = MathLogic.Add(a, b);
+                    looping = false;
+                    break;
+                case "subtract":
+                    Console.Clear();
+                    OperatorSymbol = '-';
+                    Answer = MathLogic.Subtract(a, b);
+                    looping = false;
+                    break;
+                case "multiply":
+                    Console.Clear();
+                    OperatorSymbol = '*';
+                    Answer = MathLogic.Multiply(a, b);
+                    looping = false;
+                    break;
+                case "divide":
+                    Console.Clear();
+                    OperatorSymbol = '/';
+                    Answer = MathLogic.Divide(a, b);
+                    looping = false;
+                    break;
+                case "menu":
+                    looping = false;
+                    Console.Clear();
+                    await MainMenu();
+                    break;
+                case "quit":
+                    looping = false;
+                    PrintQuittingGame();
+                    QuittingGame = true;
+                    Environment.Exit(0);
+                    break;
+                default:
+                    Console.Clear();
+                    Console.WriteLine();
+                    break;
             }
         }
-    }
-
-    public static void ReturnToMenu()
-    {
-        Console.WriteLine("Return to menu?");
-        Console.WriteLine("Y to return");
-        Console.WriteLine("N to quit game.");
     }
 
     public static void PrintQuittingGame()
@@ -194,56 +169,45 @@ public class Menu
         Console.WriteLine("*************************");
     }
 
-    public static void LightningModeMenu(string mode)
+    public static async Task LightningModeMenu(string mode)
     {
         var looping = true;
         var table = new Table();
         table.Title($"{mode} Mode");
         table.Border(TableBorder.Rounded);
-        table.AddColumn("#");
         table.AddColumn("Menu");
-        table.AddRow("1.", "Begin");
-        table.AddRow("2.", "Menu");
-        table.AddRow("3.", "Quit           ");
+        table.AddRow("Begin");
+        table.AddRow("Menu");
+        table.AddRow("Quit           ");
 
         while (looping)
         {
             AnsiConsole.Write(table);
-            Console.WriteLine(); //                    l
-            Console.WriteLine("An infinite and random\n" +
-                              "challenge mode from any\n" +
-                              "difficulty.");
-            Console.Write("Menu selection: ");
+            Console.WriteLine(" An infinite and random\n" +
+                              " challenge mode from any\n" +
+                              "       difficulty.\n");
+            Console.Write(" Menu selection: ");
 
-            var input = 0;
-            try
-            {
-                input = Convert.ToInt32(Console.ReadLine());
-                Console.Clear();
-            }
-            catch (Exception e)
-            {
-                Console.Clear();
-                LightningModeMenu(mode);
-            }
-
+            var speech = new Speech();
+            await speech.LightningModeMenuSelection();
+            var input = Speech.LightningModeSelection;
             switch (input)
             {
-                case 1:
+                case "begin":
                     looping = false;
                     Console.Clear();
-                    Lightning.LightningMode(mode);
+                    await Lightning.LightningMode(mode);
                     break;
-                case 2:
+                case "menu":
                     looping = false;
                     Console.Clear();
-                    MainMenu();
+                    await MainMenu();
                     break;
-                case 3:
+                case "quit":
                     looping = false;
                     Console.Clear();
                     PrintQuittingGame();
-                    QuittingGame = true;
+                    Environment.Exit(0);
                     break;
                 default:
                     Console.Clear();

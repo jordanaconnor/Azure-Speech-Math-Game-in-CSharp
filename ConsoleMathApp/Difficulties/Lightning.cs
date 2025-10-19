@@ -1,19 +1,16 @@
-using System.Diagnostics;
-
 namespace ConsoleMathApp;
 
 public class Lightning
 {
-    public static void LightningMode(string mode)
+    public static async Task LightningMode(string mode)
     {
         var isRunning = true;
-        
         var rand = new Random();
+        var speech = new Speech();
 
         while (isRunning)
         {
             var guessing = true;
-            var attempts = 1;
 
             //solving the problem
             while (guessing)
@@ -59,7 +56,7 @@ public class Lightning
                         Menu.OperatorSymbol = '/';
                         break;
                     default:
-                        Console.WriteLine("fuck, randomOperatorSelector did something other than 1-4");
+                        Console.WriteLine("randomOperatorSelector did something other than 1-4");
                         break;
                 }
 
@@ -73,7 +70,18 @@ public class Lightning
 
                     Menu.Answer = MathLogic.Divide(a, b);
                 }
-                
+
+                if (Menu.OperatorSymbol == '-')
+                {
+                    while (a < b)
+                    {
+                        a = MathLogic.RandomNum(mode);
+                        b = MathLogic.RandomNum(mode);
+                    }
+
+                    Menu.Answer = MathLogic.Subtract(a, b);
+                }
+
                 while (looping)
                 {
                     Console.WriteLine();
@@ -84,11 +92,13 @@ public class Lightning
 
 
                     Console.WriteLine(" ───────────────────────────");
+                    Console.WriteLine($"Correct Answer: {Menu.Answer}");
                     Console.Write("    Guess: ");
 
                     try
                     {
-                        var guess = Convert.ToInt32(Console.ReadLine());
+                        await speech.GetGuessSpeechInput();
+                        var guess = Speech.NumGuess;
 
                         if (guess == Menu.Answer)
                         {
@@ -97,7 +107,7 @@ public class Lightning
                                 Convert.ToString(
                                     $"Question {Menu.TotalProblemsSolved}: \n " +
                                     $"{a} {Menu.OperatorSymbol} {b} = {Menu.Answer} \n" +
-                                    $" Attempts: {attempts}\n" +
+                                    $" Attempts: {Menu.Attempts}\n" +
                                     $" Game Mode: Lightning\n" +
                                     $" Question difficulty: {mode}");
                             GameHistory.History.Add(completedProblem);
@@ -105,11 +115,15 @@ public class Lightning
 
                             Console.WriteLine("          Correct");
                             Console.WriteLine();
-                            Console.WriteLine(" Next question? (Y/N)");
+                            Console.WriteLine(" Play again?\n" +
+                                              " 'Yes' - Generates a new problem\n" +
+                                              " 'Menu' returns to menu");
                             Console.Write("    Choice: ");
-                            var response = Console.ReadLine();
 
-                            if (response.ToUpper() == "N")
+                            await speech.PlayAgainSpeechInput();
+                            var response = Speech.PlayAgainInput;
+
+                            if (response == "menu")
                             {
                                 Console.Write("Returning to menu");
                                 for (var i = 0; i < 3; i++)
@@ -122,44 +136,19 @@ public class Lightning
                                 guessing = false;
                                 isRunning = false;
                                 looping = false;
-                                Menu.MainMenu();
+                                await Menu.MainMenu();
                             }
-                            else if (response.ToUpper() == "Y")
+
+                            if (response == "yes")
                             {
                                 Console.Clear();
                                 looping = false;
-                                attempts = 1;
-                            }
-                            else
-                            {
-                                while (response.ToUpper() != "Y" && response.ToUpper() != "N")
-                                {
-                                    Console.WriteLine("Invalid input");
-                                    Console.Write("Input: ");
-                                    response = Console.ReadLine();
-                                    response.ToUpper();
-                                }
-
-                                if (response.ToUpper() == "N")
-                                {
-                                    Console.Clear();
-                                    Menu.MainMenu();
-                                }
-
-                                if (response.ToUpper() == "Y")
-                                {
-                                    Console.Clear();
-                                    looping = false;
-                                    attempts = 1;
-                                }
+                                Menu.Attempts = 1;
                             }
                         }
                         else
                         {
-                            Console.WriteLine("          Try again...");
-                            Thread.Sleep(600);
-                            Console.Clear();
-                            attempts++;
+                            Menu.Attempts++;
                         }
                     }
                     catch
@@ -167,7 +156,6 @@ public class Lightning
                         Console.WriteLine("          Try again...");
                         Thread.Sleep(600);
                         Console.Clear();
-                        attempts++;
                     }
                 }
             }

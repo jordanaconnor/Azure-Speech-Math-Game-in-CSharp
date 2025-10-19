@@ -2,7 +2,7 @@
 
 public class Program
 {
-    static async Task Main(string[] args)
+    private static async Task Main(string[] args)
     {
         // You need to create a Math game containing the 4 basic operations
         //
