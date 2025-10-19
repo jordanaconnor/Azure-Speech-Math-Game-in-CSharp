@@ -1,19 +1,21 @@
-namespace ConsoleMathApp;
 using Spectre.Console;
+
+namespace ConsoleMathApp;
 
 public class Menu
 {
     public static char OperatorSymbol = '@';
-    public static int Answer = 0;
-    public static bool QuittingGame = false;
+    public static int Answer;
+    public static bool QuittingGame;
     public static int TotalProblemsSolved = 1;
-    public static void MainMenu()
+
+    public static async Task MainMenu()
     {
         var looping = true;
         while (looping)
         {
-            int input = 1;
-            
+            var input = 1;
+
             Console.WriteLine();
             var table = new Table();
             table.Title("Math Game");
@@ -34,15 +36,29 @@ public class Menu
 
             try
             {
-                Console.Write("Input: ");
+                var speech = new Speech();
+                await speech.GetSpeechInput();
                 input = Convert.ToInt32(Console.ReadLine());
-                Console.Clear();
             }
             catch (Exception e)
             {
-                Console.Clear();
-                MainMenu();
+                Console.WriteLine(e);
+                throw;
             }
+            
+            
+            // try
+            // {
+            //     
+            //     Console.Write("Input: ");
+            //     input = Convert.ToInt32(Console.ReadLine());
+            //     Console.Clear();
+            // }
+            // catch (Exception e)
+            // {
+            //     Console.Clear();
+            //     MainMenu();
+            // }
 
             switch (input)
             {
@@ -83,7 +99,7 @@ public class Menu
             }
         }
     }
-    
+
     public static void SubMenu(string mode, int a, int b)
     {
         var table = new Table();
@@ -99,8 +115,9 @@ public class Menu
         table.AddRow("6.", "Quit           ");
 
         var looping = true;
-        
-        while (looping){
+
+        while (looping)
+        {
             AnsiConsole.Write(table);
             Console.WriteLine("Select a math operator ");
             Console.Write("Input: ");
@@ -233,8 +250,5 @@ public class Menu
                     break;
             }
         }
-
-
     }
-    
 }

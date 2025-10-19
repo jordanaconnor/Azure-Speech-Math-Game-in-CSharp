@@ -1,9 +1,8 @@
 ﻿using ConsoleMathApp;
-using Spectre.Console;
 
 public class Program
 {
-    public static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         // You need to create a Math game containing the 4 basic operations
         //
@@ -15,7 +14,6 @@ public class Program
         // You don't need to record results on a database. Once the program is closed the results will be deleted.
 
         Console.Clear();
-        Menu.MainMenu();
-        
+        await Menu.MainMenu();
     }
 }

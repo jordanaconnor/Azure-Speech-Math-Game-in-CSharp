@@ -1,0 +1,60 @@
+# ===== .NET Build Artifacts =====
+bin/
+obj/
+Debug/
+Release/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.log
+*.db
+
+# ===== User-specific files =====
+*.user
+*.suo
+*.userosscache
+*.userprefs
+
+# ===== IDE Directories =====
+.vs/
+.idea/
+*.iml
+
+# ===== OS Generated =====
+.DS_Store
+Thumbs.db
+
+# ===== Rider / JetBrains =====
+*.sln.iml
+.idea/
+*.dotCover
+*.sln.DotSettings
+
+# ===== NuGet =====
+*.nupkg
+*.nuspec
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ===== Environment / Secrets =====
+.env
+.env.local
+.env.*.local
+
+# ===== Temporary files =====
+~$*
+*.tmp
+*.bak
+*.swp
+*.orig
+
+# ===== Auto-generated build files =====
+ConsoleMathApp/bin/
+ConsoleMathApp/obj/
+ConsoleMathApp/ConsoleMathApp.deps.json
+ConsoleMathApp/ConsoleMathApp.runtimeconfig.json
+ConsoleMathApp/ConsoleMathApp.dll
+ConsoleMathApp/ConsoleMathApp.pdb
+

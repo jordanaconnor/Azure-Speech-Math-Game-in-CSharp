@@ -8,14 +8,13 @@ public class Lightning
     {
         var isRunning = true;
         
-        Stopwatch timer = new();
-        Random rand = new Random();
-        
+        var rand = new Random();
+
         while (isRunning)
         {
             var guessing = true;
             var attempts = 1;
-        
+
             //solving the problem
             while (guessing)
             {
@@ -36,10 +35,10 @@ public class Lightning
                         mode = "Hard";
                         break;
                 }
-                
+
                 var a = MathLogic.RandomNum(mode);
                 var b = MathLogic.RandomNum(mode);
-                
+
                 var randomOperatorSelector = rand.Next(1, 5); //gen 1-4
                 switch (randomOperatorSelector)
                 {
@@ -71,22 +70,23 @@ public class Lightning
                         a = MathLogic.RandomNum(mode);
                         b = MathLogic.RandomNum(mode);
                     }
+
                     Menu.Answer = MathLogic.Divide(a, b);
                 }
-                timer.Start();
                 
-                while (looping){
+                while (looping)
+                {
                     Console.WriteLine();
                     Console.WriteLine($"          Problem {Menu.TotalProblemsSolved}");
                     Console.WriteLine(" ───────────────────────────");
                     Console.WriteLine(" ───────────────────────────");
                     MathLogic.PrintProblem(a, b, Menu.OperatorSymbol);
-                    
+
 
                     Console.WriteLine(" ───────────────────────────");
                     Console.Write("    Guess: ");
 
-                    try 
+                    try
                     {
                         var guess = Convert.ToInt32(Console.ReadLine());
 
@@ -112,11 +112,10 @@ public class Lightning
                             if (response.ToUpper() == "N")
                             {
                                 Console.Write("Returning to menu");
-                                for (int i = 0; i < 3; i++)
+                                for (var i = 0; i < 3; i++)
                                 {
                                     Console.Write(" . ");
                                     Thread.Sleep(500);
-
                                 }
 
                                 Console.Clear();
@@ -140,7 +139,7 @@ public class Lightning
                                     response = Console.ReadLine();
                                     response.ToUpper();
                                 }
-                                
+
                                 if (response.ToUpper() == "N")
                                 {
                                     Console.Clear();

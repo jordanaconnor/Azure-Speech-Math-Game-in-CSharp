@@ -2,22 +2,16 @@ namespace ConsoleMathApp;
 
 public static class GameHistory
 {
-    public static List<string> History { get; } = new List<string>();
+    public static List<string> History { get; } = new();
 
     public static void ViewHistory()
     {
         var looping = true;
         Console.Clear();
 
-        if (History.Count == 0)
-        {
-            Console.WriteLine("No game history currently.");
-        }
+        if (History.Count == 0) Console.WriteLine("No game history currently.");
 
-        foreach (var problemSolved in History)
-        {
-            Console.WriteLine(problemSolved);
-        }
+        foreach (var problemSolved in History) Console.WriteLine(problemSolved);
 
         while (looping)
         {
@@ -36,6 +30,5 @@ public static class GameHistory
                 ViewHistory();
             }
         }
-        
     }
 }

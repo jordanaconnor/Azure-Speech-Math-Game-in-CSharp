@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Spectre.Console;
 
 namespace ConsoleMathApp;
 
@@ -9,7 +8,7 @@ public class Easy
     {
         var isRunning = true;
         Stopwatch timer = new();
-        
+
 
         while (isRunning)
         {
@@ -22,7 +21,7 @@ public class Easy
 
             Console.WriteLine();
             Menu.SubMenu(mode, a, b);
-            
+
             if (Menu.OperatorSymbol == '/')
             {
                 while (a % b != 0)
@@ -30,9 +29,10 @@ public class Easy
                     a = MathLogic.RandomNum(mode);
                     b = MathLogic.RandomNum(mode);
                 }
+
                 Menu.Answer = MathLogic.Divide(a, b);
             }
-            
+
             if (Menu.QuittingGame)
             {
                 guessing = false;
@@ -42,15 +42,13 @@ public class Easy
             //solving the problem
             while (guessing)
             {
-                
                 //Displays math problem
                 Console.WriteLine();
                 Console.WriteLine($"          Problem {Menu.TotalProblemsSolved}");
                 Console.WriteLine(" ───────────────────────────");
                 Console.WriteLine(" ───────────────────────────");
 
-                
-                
+
                 if (sessionsFirstQuestion || tryingAgain)
                 {
                     MathLogic.PrintProblem(a, b, Menu.OperatorSymbol);
@@ -68,29 +66,21 @@ public class Easy
                             a = MathLogic.RandomNum(mode);
                             b = MathLogic.RandomNum(mode);
                         }
+
                         Menu.Answer = MathLogic.Divide(a, b);
                     }
-                    
+
                     MathLogic.PrintProblem(a, b, Menu.OperatorSymbol);
                     timer.Start();
                 }
 
                 if (!sessionsFirstQuestion && Menu.OperatorSymbol == '+')
-                {
                     Menu.Answer = MathLogic.Add(a, b);
-                }
                 else if (!sessionsFirstQuestion && Menu.OperatorSymbol == '-')
-                {
                     Menu.Answer = MathLogic.Subtract(a, b);
-                }
                 else if (!sessionsFirstQuestion && Menu.OperatorSymbol == '*')
-                {
                     Menu.Answer = MathLogic.Multiply(a, b);
-                }
-                else if (!sessionsFirstQuestion && Menu.OperatorSymbol == '/')
-                {
-                    Menu.Answer = MathLogic.Divide(a, b);
-                }
+                else if (!sessionsFirstQuestion && Menu.OperatorSymbol == '/') Menu.Answer = MathLogic.Divide(a, b);
 
                 Console.WriteLine(" ───────────────────────────");
                 Console.Write("    Guess: ");
@@ -98,14 +88,14 @@ public class Easy
                 try
                 {
                     var guess = Convert.ToInt32(Console.ReadLine());
-                    
+
                     if (guess == Menu.Answer)
                     {
                         timer.Stop();
                         var timeSpan = timer.Elapsed;
                         timer.Reset();
 
-                        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                        var elapsedTime = string.Format("{0:00}:{1:00}:{2:00}.{3:00}",
                             timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds,
                             timeSpan.Milliseconds / 10);
 
@@ -137,7 +127,7 @@ public class Easy
                         if (response.ToUpper() == "N")
                         {
                             Console.Write("Returning to menu");
-                            for (int i = 0; i < 3; i++)
+                            for (var i = 0; i < 3; i++)
                             {
                                 Console.Write(" . ");
                                 Thread.Sleep(500);
@@ -169,13 +159,13 @@ public class Easy
                                 Console.Clear();
                                 Menu.MainMenu();
                             }
+
                             if (response.ToUpper() == "Y")
                             {
                                 Console.Clear();
                                 sessionsFirstQuestion = false;
                                 attempts = 1;
                             }
-                            
                         }
                     }
                     else
@@ -185,7 +175,6 @@ public class Easy
                         Console.Clear();
                         attempts++;
                         tryingAgain = true;
-                    
                     }
                 }
                 catch
